@@ -59,6 +59,10 @@
   var state = { q: '', points: 'all', category: 'all' };
   var LS_HISTORY = 'tc_history_v1';
   var LS_FAVS = 'tc_favs_v1';
+  var BUILD_LABEL = '2026-11-08 v2 · 多入口';
+  var CN_ENTRY = 'https://police-intake-guide.app.workbuddy.host/code/?sharecode=HZ743KIQEU';
+  var GITHUB_PAGES = 'https://la88cy88.github.io/traffic-code-lookup/';
+  var GITHUB_REPO = 'https://github.com/la88cy88/traffic-code-lookup';
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -80,6 +84,24 @@
     toastEl.classList.add('show');
     clearTimeout(toast._t);
     toast._t = setTimeout(function () { toastEl.classList.remove('show'); }, 1900);
+  }
+  function fallbackCopy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('链接已复制，可粘贴发给同事'); },
+        function () { toast('复制失败，请长按地址栏复制'); });
+      return;
+    }
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast(ok ? '链接已复制' : '请长按地址栏复制');
+    } catch (e) { toast('请长按地址栏复制'); }
   }
   function addHistory(q) {
     q = String(q || '').trim();
@@ -225,7 +247,9 @@
       '<div class="card"><div class="card-title">常见情形</div><div class="chips">' + quickHtml() + '</div>' +
       '<div class="mini-note" style="margin-top:9px">' +
       '<button type="button" class="chip gray" data-act="favorites">★ 我的收藏 (' + favCount + ')</button> ' +
-      '<button type="button" class="chip gray" data-act="about">来源与说明</button></div></div>' +
+      '<button type="button" class="chip gray" data-act="about">来源与说明</button> ' +
+      '<button type="button" class="chip gray" data-act="copy-link">复制本页链接</button> ' +
+      '<button type="button" class="chip gray" data-act="howto-install">加到主屏 / 打不开</button></div></div>' +
       '<div class="card">' + filterHtml() + '</div>' +
       '<div id="results">' + resultsHtml() + '</div>';
   }
@@ -281,9 +305,29 @@
       LAW_NAMES.map(function (x) { return esc(x[0]) + '＝' + esc(x[1]); }).join('；') + '。</div>' +
       '</div>';
   }
+  function phoneHtml() {
+    return '<div class="card"><div class="card-title">手机使用 / 访问入口</div>' +
+      '<div class="kv">' +
+      kv('当前入口', esc(location.host || '当前站点')) +
+      kv('本页版本', esc(BUILD_LABEL)) +
+      '</div>' +
+      '<div class="mini-note">两个访问入口内容完全相同，任选一个使用；收藏和搜索历史按入口分别存在本机。</div>' +
+      '<div class="chips" style="margin-top:9px">' +
+      '<button type="button" class="chip" data-act="copy-link">复制当前链接</button>' +
+      '<a class="chip" href="' + esc(CN_ENTRY) + '" target="_blank" rel="noopener noreferrer">国内入口（推荐）↗</a>' +
+      '<a class="chip" href="' + esc(GITHUB_PAGES) + '" target="_blank" rel="noopener noreferrer">GitHub Pages ↗</a>' +
+      '<a class="chip" href="' + esc(GITHUB_REPO) + '" target="_blank" rel="noopener noreferrer">源码仓库 ↗</a>' +
+      '</div>' +
+      '<ul class="plain-list" style="margin-top:10px">' +
+      '<li><b>打不开或一直转圈：</b>github.io 在国内手机网络（尤其移动数据）常被拦或很慢，请点上面「国内入口（推荐）」，或切换 WiFi / 流量重试。</li>' +
+      '<li><b>加到 iPhone 主屏幕：</b>用 Safari 打开本页 → 底部「分享」 → 「添加到主屏幕」；联网打开一次后，断网也能查（数据全在本机）。</li>' +
+      '<li><b>看不到新版：</b>点右上角「↻ 刷新」清缓存重载，对照上面的版本号；不会删除收藏与搜索历史。</li>' +
+      '</ul></div>';
+  }
   function aboutHtml() {
     return '<div class="back-row"><button type="button" class="back-btn" data-act="home">‹ 返回查询</button></div>' +
       warnHtml() +
+      phoneHtml() +
       '<div class="card"><div class="card-title">数据来源</div>' +
       '<div class="kv">' +
       kv('数据名称', esc(META.source || '广东省道路交通安全违法行为代码及处罚标准（2022年版）')) +
@@ -380,6 +424,18 @@
     else if (act === 'point') { state.points = t.dataset.v; render(); }
     else if (act === 'cat') { state.category = t.dataset.v; render(); }
     else if (act === 'fav') { toggleFav(t.dataset.code); render(); }
+    else if (act === 'howto-install') go('#/about');
+    else if (act === 'copy-link') {
+      var u = new URL(location.href);
+      u.searchParams.delete('_r');
+      u.hash = '#/';
+      var link = u.toString();
+      if (navigator.share) {
+        navigator.share({ title: '违法代码速查 · 广东', url: link })
+          .then(function () { toast('已分享'); })
+          .catch(function () { fallbackCopy(link); });
+      } else fallbackCopy(link);
+    }
     else if (act === 'copy') {
       var code = t.dataset.code;
       if (navigator.clipboard && navigator.clipboard.writeText) {
