@@ -2,7 +2,7 @@
  * 策略：在线时永远取网络（保证加到主屏后也能自动拿到新版），离线时回落缓存。
  * 右上角「↻ 刷新」会注销本 SW 并清空缓存，用于强制更新。
  */
-const VERSION = 'tc-v2-2026-11-08-entries';
+const VERSION = 'tc-v3-2026-11-08-national';
 const CACHE = 'tc-cache-' + VERSION;
 const CORE = [
   './', './index.html', './styles.css', './app.js',
