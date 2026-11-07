@@ -1,0 +1,16 @@
+{
+  "name": "违法代码速查 · 广东",
+  "short_name": "代码速查",
+  "description": "广东交通违法代码速查（参考信息，需自行核查）",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f4f9",
+  "theme_color": "#12335c",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

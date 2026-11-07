@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12335c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="违法代码速查">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="广东交通违法代码速查（参考信息，需自行核查）">
+  <title>违法代码速查 · 广东</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">粤</span>
+        <div class="brand-text">
+          <div class="brand-title">违法代码速查</div>
+          <div class="brand-sub">广东 · 参考信息</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="btn-refresh" class="top-btn" type="button" title="清缓存并刷新到最新版">↻ 刷新</button>
+        <button id="btn-about" class="top-btn" type="button" title="来源与说明">说明</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app" class="app"></main>
+
+  <footer class="footer">
+    参考信息 · 自行核查 · 不作为行政处罚决定依据
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/codes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
