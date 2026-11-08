@@ -21,10 +21,34 @@
   var app = document.getElementById('app');
   var toastEl = document.getElementById('toast');
 
-  var BUILD_LABEL = '2026-11-08 v3 · 广东 + 全国通用';
+  var BUILD_LABEL = '2026-11-08 v4 · 资料库入口';
   var CN_ENTRY = 'https://police-intake-guide.app.workbuddy.host/code/?sharecode=HZ743KIQEU';
   var GITHUB_PAGES = 'https://la88cy88.github.io/traffic-code-lookup/';
   var GITHUB_REPO = 'https://github.com/la88cy88/traffic-code-lookup';
+
+  /* 第三方 IMA 知识库公开分享页可见的目录信息（采集于 2026-11-08）。
+   * 只包含分类名称、内容数、更新时间，不含任何文章正文；正文需在原知识库订阅后查看。 */
+  var LIBRARY = {
+    name: '两拐丨交通安全知识传播者',
+    intro: '基于公众号「两拐丨交通安全知识传播者」亿万字符的智能 ima 知识库（第三方公开分享）。',
+    url: 'https://ima.qq.com/wiki/?shareId=fb95e5e5faee4861f8a3b66d052d09b7924d83c3fa795de6bcd5fb387fdf7566',
+    total: 10385,
+    subscribers: 3445,
+    captured: '2026-11-08',
+    sample: '哪些路段必须设置护栏？',
+    folders: [
+      { name: '业务探讨', files: 2, subFolders: 1, updated: '10/30 更新' },
+      { name: '资源合辑', files: 184, subFolders: 0, updated: '10/17 更新' },
+      { name: '个人见解', files: 271, subFolders: 1, updated: '10/17 更新' },
+      { name: '其他', files: 4, subFolders: 4, updated: '10/27 更新' },
+      { name: '03.机动车驾驶人管理', files: 40, subFolders: 1, updated: '10/17 更新' },
+      { name: '08.队伍建设与执法监督', files: 5, subFolders: 5, updated: '11/1 更新' },
+      { name: 'A.领导干部应知应会党内法规（提高思想认识）', files: 213, subFolders: 0, updated: '10/17 更新' },
+      { name: '09.交通管理科技与信息化建设', files: 12, subFolders: 1, updated: '10/17 更新' },
+      { name: 'B.标准表格与样式', files: 1, subFolders: 0, updated: '10/17 更新' },
+      { name: 'D.普法便民（提升服务水平）', files: 2, subFolders: 2, updated: '10/26 更新' },
+    ],
+  };
 
   var CASE_TIPS = {
     '超员': '先查明核载人数、实载人数、车辆类型与营运性质。不同车型、不同超员比例对应不同代码与记分，不能仅凭「多载了人」直接选定代码；请自行核查现行分档。',
@@ -318,6 +342,8 @@
       '<div class="mini-note" style="margin-top:9px">' +
       '<button type="button" class="chip gray" data-act="quick-all">' + (state.quickAll ? '收起分组' : '显示全部常见情形') + '</button></div>' +
       '<div class="mini-note" style="margin-top:9px">' +
+      '<button type="button" class="chip" data-act="library">交通资料库 · 两拐知识库目录与入口</button></div>' +
+      '<div class="mini-note" style="margin-top:9px">' +
       '<button type="button" class="chip gray" data-act="favorites">★ 我的收藏 (' + favCount + ')</button> ' +
       '<button type="button" class="chip gray" data-act="about">来源与说明</button> ' +
       '<button type="button" class="chip gray" data-act="copy-link">复制本页链接</button> ' +
@@ -427,6 +453,14 @@
       '字段结构与查询方式参考 ZG122「交通违法代码查询」小程序公开转载的查询结果（代码 / 违法行为 / 俗称 / 记分 / 罚款 / 违反条款 / 处罚依据）。' +
       '本页为自建参考工具，与 ZG122 及任何公安机关无关联。</div></div>' +
       srcCards +
+      '<div class="card"><div class="card-title">交通资料库（第三方公开分享）</div>' +
+      '<div class="mini-note">另收录「' + esc(LIBRARY.name) + '」知识库公开分享页可见的目录：' +
+      esc(String(LIBRARY.total)) + ' 条内容、' + LIBRARY.folders.length + ' 个顶层分类。' +
+      '只放目录与入口，未复制正文，需自行核查；单篇文章请在原知识库订阅后查看。</div>' +
+      '<div class="chips" style="margin-top:9px">' +
+      '<button type="button" class="chip" data-act="library">查看资料库目录</button>' +
+      '<a class="chip gray" href="' + esc(LIBRARY.url) + '" target="_blank" rel="noopener noreferrer">打开原知识库 ↗</a>' +
+      '</div></div>' +
       '<div class="card"><div class="card-title">法规简称对照</div>' +
       '<div class="kv">' + LAW_NAMES.map(function (x) { return kv(x[0], esc(x[1]), 'legal'); }).join('') + '</div></div>' +
       '<div class="card"><div class="card-title">代码编码规则（旧版，仅供参考）</div>' +
@@ -443,6 +477,50 @@
       '<li>右上角「↻ 刷新」会清空页面缓存并重新加载，用于拿最新版；不会删除搜索历史与收藏。</li>' +
       '</ul></div>';
   }
+  function libraryHtml() {
+    var L = LIBRARY;
+    return '<div class="back-row"><button type="button" class="back-btn" data-act="home">‹ 返回查询</button></div>' +
+      '<div class="warn">' +
+      '<div class="warn-title"><span class="warn-icon">!</span><span>第三方资料目录 · 需自行核查</span></div>' +
+      '本页只收录该知识库<strong>公开分享页可见的目录信息</strong>（分类名称、内容数量、更新时间），' +
+      '未复制、未转载任何文章正文。内容由第三方公众号整理，未经业务审核，' +
+      '<strong>不作为行政处罚决定、案件定性或管辖依据</strong>；单篇内容请在原知识库订阅后查看。' +
+      '</div>' +
+      '<div class="card lib-hero">' +
+      '<div class="lib-hero-title">' + esc(L.name) + '</div>' +
+      '<div class="mini-note">' + esc(L.intro) + '</div>' +
+      '<div class="lib-stats">' +
+      '<div class="lib-stat"><b>' + esc(String(L.total)) + '</b><span>条内容</span></div>' +
+      '<div class="lib-stat"><b>' + esc(String(L.subscribers)) + '</b><span>人订阅</span></div>' +
+      '<div class="lib-stat"><b>' + L.folders.length + '</b><span>个可见分类</span></div>' +
+      '</div>' +
+      '<div class="chips" style="margin-top:11px">' +
+      '<a class="chip" href="' + esc(L.url) + '" target="_blank" rel="noopener noreferrer">打开原知识库 ↗</a>' +
+      '<button type="button" class="chip gray" data-act="copy-kb-link">复制知识库链接</button>' +
+      '</div>' +
+      '<div class="mini-note">数字为分享页统计；下方目录仅为分享页首屏可见的顶层分类，更多分类未展开。' +
+      '原知识库需联网打开，本页目录已随应用离线保存。采集日期：' + esc(L.captured) + '。</div>' +
+      '</div>' +
+      '<div class="card"><div class="card-title">公开可见的分类目录（' + L.folders.length + ' 个）</div>' +
+      '<div class="mini-note">数字为分享页显示的该分类下内容数；部分分类还含子文件夹，未展开。按分享页原顺序排列。</div>' +
+      '<div class="lib-folders">' +
+      L.folders.map(function (f) {
+        return '<div class="lib-folder"><div class="lib-folder-name">' + esc(f.name) + '</div>' +
+          '<div class="lib-folder-meta">' + esc(String(f.files)) + ' 条内容' +
+          (f.subFolders ? ' · ' + f.subFolders + ' 个子分类' : '') +
+          ' · ' + esc(f.updated) + '</div></div>';
+      }).join('') +
+      '</div></div>' +
+      '<div class="card"><div class="card-title">正文为什么没有一起放进来</div>' +
+      '<ul class="plain-list">' +
+      '<li>分享页只公开简介与目录；单篇文章需在 ima 客户端或网页订阅该知识库后打开。</li>' +
+      '<li>本工具是离线静态页，不登录、不抓取、不缓存第三方正文，避免把未核验内容当成依据。</li>' +
+      '<li>分享页展示的「' + esc(L.sample) + '」是提问框示例，不是本页收录的文章。</li>' +
+      '<li>如需按主题做离线全文检索，请提供导出文件（PDF / Word / 文本）或可公开访问的原文，仍按「参考信息 · 需自行核查」口径整理。</li>' +
+      '</ul>' +
+      '<div class="mini-note">涉及法规条款、违法代码与处罚标准，请以现行官方文本与本单位法制部门口径为准；' +
+      '本页与代码数据表互不替代，也不代表任何公安机关立场。</div></div>';
+  }
   function favoritesHtml() {
     var list = favs().map(resolveId).map(byId).filter(Boolean);
     return '<div class="back-row"><button type="button" class="back-btn" data-act="home">‹ 返回查询</button></div>' +
@@ -457,6 +535,7 @@
     var h = location.hash || '';
     if (h.indexOf('#/code/') === 0) return { name: 'detail', id: decodeURIComponent(h.slice(7)) };
     if (h.indexOf('#/about') === 0) return { name: 'about' };
+    if (h.indexOf('#/library') === 0) return { name: 'library' };
     if (h.indexOf('#/favorites') === 0) return { name: 'favorites' };
     return { name: 'home' };
   }
@@ -468,6 +547,7 @@
         '<div class="back-row"><button type="button" class="back-btn" data-act="home">‹ 返回查询</button></div>' +
         '<div class="empty">没有找到代码 ' + esc(v.id) + '。</div>';
     } else if (v.name === 'about') app.innerHTML = aboutHtml();
+    else if (v.name === 'library') app.innerHTML = libraryHtml();
     else if (v.name === 'favorites') app.innerHTML = favoritesHtml();
     else app.innerHTML = homeHtml();
     window.scrollTo(0, 0);
@@ -511,7 +591,9 @@
     else if (act === 'open') { addHistory(state.q); go('#/code/' + encodeURIComponent(t.dataset.id)); }
     else if (act === 'home') go('#/');
     else if (act === 'about') go('#/about');
+    else if (act === 'library') go('#/library');
     else if (act === 'favorites') go('#/favorites');
+    else if (act === 'copy-kb-link') fallbackCopy(LIBRARY.url);
     else if (act === 'clear-q') { setQuery('', false); var i = document.getElementById('q'); if (i) i.focus(); }
     else if (act === 'clear-history') { writeLS(LS_HISTORY, []); updateResults(); toast('已清除搜索历史'); }
     else if (act === 'point') { state.points = t.dataset.v; state.more = false; render(); }
